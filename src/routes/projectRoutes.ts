@@ -6,7 +6,7 @@ import { TaskController } from "../controllers/TaskController";
 import { projectExist } from "../middleware/project";
 import { taskBelongsToProject, taskExist } from "../middleware/task";
 
-const router = Router()
+const router : Router = Router()
 
 router.post('/', 
     body('projectName').notEmpty().withMessage('El Nombre del Proyecto es Obligatorio'),
