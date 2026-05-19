@@ -30,7 +30,7 @@ export const TaskSchema : Schema = new Schema ({
     },
     project: {
         type: Types.ObjectId,   //almacenamos la referencia del proyecto
-        ref: 'IProject'
+        ref: 'Project'
     },
     status: {
         type: String,
