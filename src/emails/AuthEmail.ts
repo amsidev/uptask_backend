@@ -22,7 +22,7 @@ export class AuthEmail {
 
                 <p>Please confirm your email address by clicking the link below:</p>
 
-                <a href="#">Confirm account</a>
+                <a href="${process.env.FRONTEND_URL}/auth/confirm-account">Confirm account</a>
 
                 <p>If you did not create this account, you can safely ignore this email.</p>
 

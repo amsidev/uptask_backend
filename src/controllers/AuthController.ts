@@ -50,10 +50,10 @@ export class AuthController {
     static confirmAccount = async (req: Request, res: Response) => {
         try {
             const { token } = req.body
-            const tokenExists = await Token.findOne({token})
-            if(!tokenExists) {
+            const tokenExists = await Token.findOne({ token })
+            if (!tokenExists) {
                 const error = new Error('Invalid Token')
-                return res.status(401).json({error: error.message})
+                return res.status(401).json({ error: error.message })
             }
             const user = await User.findById(tokenExists.user)
             user.confirmed = true
@@ -67,15 +67,15 @@ export class AuthController {
     }
 
     static login = async (req: Request, res: Response) => {
-        try { 
-            const {email, password} = req.body;
-            const user = await User.findOne({email})
-            if(!user) {
+        try {
+            const { email, password } = req.body;
+            const user = await User.findOne({ email })
+            if (!user) {
                 const error = new Error('User not found')
-                return res.status(401).json({error: error.message})
-            } 
+                return res.status(401).json({ error: error.message })
+            }
 
-            if(!user.confirmed) {
+            if (!user.confirmed) {
                 const token = new Token()
                 token.user = user._id
                 token.token = generateToken()
@@ -89,20 +89,56 @@ export class AuthController {
                 })
 
                 const error = new Error('Your account has not been confirmed. A confirmation email has been sent')
-                return res.status(403).json({error: error.message})
-            } 
+                return res.status(403).json({ error: error.message })
+            }
 
             // chech for password
             const isPasswordCorrect = await checkPassword(password, user.password)
-            if(!isPasswordCorrect) {
+            if (!isPasswordCorrect) {
                 const error = new Error('Incorrect username or password')
-                return res.status(401).json({error: error.message})
+                return res.status(401).json({ error: error.message })
             }
 
             res.send('autenticado...')
-        
+
         } catch (error) {
-            res.status(500).json({error: 'Internal server error'})
+            res.status(500).json({ error: 'Internal server error' })
+        }
+    }
+
+    static requestConfirmationCode = async (req: Request, res: Response) => {
+        try {
+            const { email } = req.body;
+
+            //invalid duplicates 
+            const user = await User.findOne({ email })
+            if (!user) {
+                const error = new Error('The user had not been registerted')
+                return res.status(404).json({ error: error.message })
+            }
+            
+            if (user.confirmed) {
+                const error = new Error('The user had been confirmed')
+                return res.status(403).json({ error: error.message })
+            }
+
+            //Create Token
+            const token = new Token()
+            token.token = generateToken()
+            token.user = user._id;
+
+            //SEND mail
+            AuthEmail.sendConfirmationEmail({
+                email: user.email,
+                name: user.name,
+                token: token.token
+            })
+
+            await Promise.allSettled([user.save(), token.save()])
+
+            res.send('A new Token had been sended')
+        } catch (error) {
+            res.status(500).json({ erro: 'Internal server error' })
         }
     }
 
