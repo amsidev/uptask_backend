@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, PopulatedDoc, Types} from "mongoose";
 import { ITask } from "./Task";
+import { IUser } from "./User";
 
 //ts
 export interface IProject extends Document  {
@@ -7,6 +8,7 @@ export interface IProject extends Document  {
     clientName: string
     description: string
     tasks: PopulatedDoc<ITask & Document>[]     // un proyecto puee tener multiples tareas por eso es array
+    manager: PopulatedDoc<IUser & Document>
 }
 
 //mongoose
@@ -31,7 +33,11 @@ const projectSchema: Schema = new Schema ({
             type: Types.ObjectId,
             ref: 'Task'
         }
-    ]
+    ],
+    manager: {
+        type: Types.ObjectId,
+        ref: 'User'
+    }
 }, {timestamps: true})
 
 // con el generic<> le digo que caracteristicas quiero tener en mi codigo del proyecto
