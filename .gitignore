@@ -1,4 +1,37 @@
-/node_modules
-/dits
+# Dependencias
+node_modules/
+
+# Build output (TypeScript compilado)
+/dist
+
+# Variables de entorno
 .env
+.env.local
+.env.*.local
+
+# Credenciales / archivos sensibles
 credentials
+*.pem
+*.key
+*.cert
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+
+# Testing / cobertura
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.eslintcache
