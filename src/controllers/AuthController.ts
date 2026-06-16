@@ -5,6 +5,7 @@ import { checkPassword, hashPassword } from "../utils/auth";
 import Token from "../models/Token";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
+import { generateJWT } from "../utils/jwt";
 
 export class AuthController {
 
@@ -99,7 +100,9 @@ export class AuthController {
                 return res.status(401).json({ error: error.message })
             }
 
-            res.send('autenticado...')
+            const token = generateJWT({id: user._id})
+            
+            res.send(token)
 
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' })
