@@ -9,6 +9,7 @@ export interface IProject extends Document  {
     description: string
     tasks: PopulatedDoc<ITask & Document>[]     // un proyecto puee tener multiples tareas por eso es array
     manager: PopulatedDoc<IUser & Document>
+    team: PopulatedDoc<IUser & Document>[]
 }
 
 //mongoose
@@ -37,7 +38,13 @@ const projectSchema: Schema = new Schema ({
     manager: {
         type: Types.ObjectId,
         ref: 'User'
-    }
+    },
+    team: [
+        {
+            type: Types.ObjectId,
+            ref: 'User'
+        }
+    ],
 }, {timestamps: true})
 
 // con el generic<> le digo que caracteristicas quiero tener en mi codigo del proyecto
