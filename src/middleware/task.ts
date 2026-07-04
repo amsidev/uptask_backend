@@ -27,7 +27,15 @@ export async function taskExist(req:Request, res: Response, next: NextFunction) 
 
 export function taskBelongsToProject(req: Request, res: Response, next: NextFunction ) {
     if(!req.task.project.equals(req.project._id)) {
-        const error = new Error('Accion no valida')
+        const error = new Error('Invalid acction')
+        return res.status(400).json({error: error.message})
+    }
+    next()
+}
+
+export function hasAuthorization(req: Request, res: Response, next: NextFunction ) {
+    if(req.user._id.toString() !== req.project.manager.toString()) {
+        const error = new Error('Invalid acction')
         return res.status(400).json({error: error.message})
     }
     next()
