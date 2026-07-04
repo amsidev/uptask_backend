@@ -11,7 +11,6 @@ declare global {
 }
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
-    console.log()
     const bearer = req.headers.authorization
     if(!bearer) {
         const error = new Error('Unauthorized')
@@ -29,10 +28,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
                 req.user = user
                 next()
             } else {
-                res.status(500).json({error: 'Invelid Token'})
+                res.status(500).json({error: 'Invalid Token'})
             }
         }
     } catch (error) {
-        res.status(500).json({error: 'Invelid Token'})
+        res.status(500).json({error: 'Invalid Token'})
     }
 }
