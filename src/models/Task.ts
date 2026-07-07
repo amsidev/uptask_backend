@@ -8,16 +8,20 @@ const taskStatus = {
     COMPLETED: 'completed'
 } as const
 
-export type TaskStatus = typeof taskStatus[keyof typeof  taskStatus]
+export type TaskStatus = typeof taskStatus[keyof typeof taskStatus]
 
 export interface ITask extends Document {
     name: string
     description: string
     project: Types.ObjectId
     status: TaskStatus
+    completedBy: {
+        user: Types.ObjectId,
+        status: TaskStatus
+    }[]
 }
 
-export const TaskSchema : Schema = new Schema ({
+export const TaskSchema: Schema = new Schema({
     name: {
         type: String,
         trim: true,
@@ -36,8 +40,23 @@ export const TaskSchema : Schema = new Schema ({
         type: String,
         enum: Object.values(taskStatus),  // parseo de type a valor con la clase padre Object
         default: taskStatus.PENDING
-    }
-}, {timestamps: true})
+    },
+    completedBy: [
+        {
+            user: {
+            type: Types.ObjectId,
+            ref: 'User',
+            default: null
+            },
+            status: {
+                type: String,
+                enum: Object.values(taskStatus),
+                default: taskStatus.PENDING
+            }
+
+        }
+    ]
+}, { timestamps: true })
 
 //le pasamos el generic para que detecte el nombredel modelo y el schema
 const Task = mongoose.model<ITask>('Task', TaskSchema);
