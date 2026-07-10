@@ -1,4 +1,4 @@
-import type {Request, Response} from 'express'
+import type { Request, Response } from 'express'
 import Task from '../models/Task'
 
 export class TaskController {
@@ -10,27 +10,29 @@ export class TaskController {
             await Promise.allSettled([task.save(), req.project.save()])
             res.send('Task created successfully')
         }
-        catch( error) {
-            res.status(500).json({error: 'something went wrong'})
+        catch (error) {
+            res.status(500).json({ error: 'something went wrong' })
         }
     }
 
     static getProjectTasks = async (req: Request, res: Response) => {
         try {
-            const tasks = await Task.find({project: req.project._id}).populate('project')
+            const tasks = await Task.find({ project: req.project._id }).populate('project')
             res.json(tasks);
         } catch (error) {
-            res.status(500).json({error: 'something went wrong'});
+            res.status(500).json({ error: 'something went wrong' });
         }
     }
 
     static getTaskById = async (req: Request, res: Response) => {
         try {
-            const task = await Task.findById(req.task._id).populate({path: 'completedBy.user', select: 'id name email'})
+            const task = await Task.findById(req.task._id)
+                .populate({ path: 'completedBy.user', select: 'id name email'})
+                .populate({ path: 'notes', populate: {path: 'createdBy', select: 'id name email'}})
 
             res.json(task)
-        } catch(error) {
-            res.status(500).json({error: 'something went wrong'});
+        } catch (error) {
+            res.status(500).json({ error: 'something went wrong' });
         }
     }
 
@@ -40,26 +42,26 @@ export class TaskController {
             req.task.description = req.body.description
             await req.task.save()
             res.send('Task updated successfully')
-        } catch(error) {
-            res.status(500).json({error: 'something went wrong'});
+        } catch (error) {
+            res.status(500).json({ error: 'something went wrong' });
         }
     }
 
     static deleteTask = async (req: Request, res: Response) => {
-        try{
-            req.project.tasks = req.project.tasks.filter( task => task.toString() !== req.task._id.toString())
-            await Promise.allSettled([ req.task.deleteOne(), req.project.save() ])
+        try {
+            req.project.tasks = req.project.tasks.filter(task => task.toString() !== req.task._id.toString())
+            await Promise.allSettled([req.task.deleteOne(), req.project.save()])
             res.send("Task deleted successfully")
 
-        } catch(error) {
-            res.status(500).json({error: 'Something went wrong'})
+        } catch (error) {
+            res.status(500).json({ error: 'Something went wrong' })
         }
     }
 
     static updateStatus = async (req: Request, res: Response) => {
         try {
-            const { status} = req.body
-            req.task.status =  status
+            const { status } = req.body
+            req.task.status = status
 
             const data = {
                 user: req.user._id,
@@ -68,8 +70,8 @@ export class TaskController {
             req.task.completedBy.push(data)
             await req.task.save()
             res.send("Task updated successfully")
-        } catch(error){
-            res.status(500).json({error: "Something went wrong"})
+        } catch (error) {
+            res.status(500).json({ error: "Something went wrong" })
         }
     }
 
