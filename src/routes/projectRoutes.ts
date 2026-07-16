@@ -14,9 +14,9 @@ const router : Router = Router()
 router.use(authenticate)
 
 router.post('/', 
-    body('projectName').notEmpty().withMessage('El Nombre del Proyecto es Obligatorio'),
-    body('clientName').notEmpty().withMessage('El Nombre del Cliente es Obligatorio'),
-    body('description').notEmpty().withMessage('La Decripcion del Proyecto es Obligatoria'),
+    body('projectName').notEmpty().withMessage('Project Name is required'),
+    body('clientName').notEmpty().withMessage('Client Name is required'),
+    body('description').notEmpty().withMessage('Description is required'),
     handleInputErrors,
     ProjectController.createProject
 )
@@ -24,33 +24,36 @@ router.post('/',
 router.get('/', ProjectController.getAllProjects)
 
 router.get('/:id',
-    param('id').isMongoId().withMessage('ID no valido'),
+    param('id').isMongoId().withMessage('Invalid ID'),
     handleInputErrors,
     ProjectController.getProjectById
 )
 
-router.put('/:id',
-    param('id').isMongoId().withMessage('ID no valido'),
-    body('projectName').notEmpty().withMessage('El Nombre del Proyecto es Obligatorio'),
-    body('clientName').notEmpty().withMessage('El Nombre del Cliente es Obligatorio'),
-    body('description').notEmpty().withMessage('La Decripcion del Proyecto es Obligatoria'),
+router.param('projectId',projectExist)
+
+router.put('/:projectId',
+    hasAuthorization,
+    param('projectId').isMongoId().withMessage('Invalid ID'),
+    body('projectName').notEmpty().withMessage('Project Name is required'),
+    body('clientName').notEmpty().withMessage('Client Name is required'),
+    body('description').notEmpty().withMessage('Description is required'),
     handleInputErrors,
     ProjectController.updateProject
 )
 
-router.delete('/:id',
-    param('id').isMongoId().withMessage('ID no valido'),
+router.delete('/:projectId',
+    hasAuthorization,
+    param('projectId').isMongoId().withMessage('Invalid ID'),
     handleInputErrors,
     ProjectController.deleteProject
 )
 
 /** Routes for tasks */
-router.param('projectId',projectExist)
 
 router.post('/:projectId/tasks', 
     hasAuthorization,
-    body('name').notEmpty().withMessage('El Nombre del Tarea es Obligatoria'),
-    body('description').notEmpty().withMessage('La Decripcion del Tarea es Obligatoria'),
+    body('name').notEmpty().withMessage('Task Name is required'),
+    body('description').notEmpty().withMessage('Description is required'),
     handleInputErrors,
     TaskController.createTask
 )
